@@ -66,12 +66,12 @@ export default function Pay() {
   return (
     <>
       <Layout>
-        <main className="flex justify-evenly">
+        <main className="flex justify-evenly max-w-[100vw]">
           {payment && <div
-            className="p-4 w-max bg-white rounded-lg border border-gray-200 shadow-md sm:p-6 md:p-8">
+            className="my-4 mx-3 p-4 w-full lg:w-max bg-white rounded-lg border border-gray-200 shadow-md sm:p-6 md:p-8">
             <h5 className="text-xl font-medium text-gray-900 mb-6">{payment.merchantId} - Payment
               step</h5>
-            <div className="flex p-4 mb-4 text-sm text-blue-700 bg-blue-100 rounded-lg w-max" role="alert">
+            <div className="flex p-4 mb-4 text-sm text-blue-700 bg-blue-100 rounded-lg w-full lg:w-max" role="alert">
               <svg aria-hidden="true" className="flex-shrink-0 inline w-5 h-5 mr-3" fill="currentColor"
                    viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd"
@@ -82,8 +82,8 @@ export default function Pay() {
               <div>
                 <span
                   className="font-medium">DLay Pay allows anonymous payments thanks to its simple wallet plugin :</span>
-                <ul className="mt-1.5 ml-4 text-blue-700 list-disc list-inside w-max">
-                  <li className="w-max">Make sure you added the plugin to your wallet</li>
+                <ul className="mt-1.5 ml-4 pr-3 text-blue-700 list-disc list-inside w-full lg:w-max">
+                  <li>Make sure you added the plugin to your wallet</li>
                   <li>You need at least <IntlProvider locale='en'>
                     <FormattedNumber value={payment.amountInWei * 0.0042}
                                      style="currency"
@@ -101,7 +101,7 @@ export default function Pay() {
             </div>
             <div className="flex justify-between">
               <button onClick={pay}
-                      className="mb-4 mr-4 w-1/3 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                      className="mb-4 mr-4 min-w-1/3 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                 Pay <IntlProvider locale='en'>
                 <FormattedNumber value={payment.amountInWei * 0.0042}
                                  style="currency"
@@ -111,7 +111,7 @@ export default function Pay() {
               </IntlProvider>
               </button>
               <button onClick={paySimulation}
-                      className="mb-4 w-1/3 py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200">
+                      className="mb-4 min-w-1/3 py-2.5 px-5 mr-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200">
                 Pay (simulation) <IntlProvider locale='en'>
                 <FormattedNumber value={payment.amountInWei * 0.0042}
                                  style="currency"
