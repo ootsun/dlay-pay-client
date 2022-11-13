@@ -43,14 +43,18 @@ export default function Pay() {
       setUserBalance(balance);
       const toPay = BigNumber.from(payment.amountInWei);
       if (balance.gte(toPay)) {
-        console.log(ethers.utils.parseEther("0.0001").toString(), toPay.toString(), ethers.utils.parseUnits(payment.amountInWei, 'wei').toString(), process.env.REACT_APP_DLAY_PAY_ETH_ADDRESS)
-        const signedTx = await s.signTransaction({
-          to: process.env.REACT_APP_DLAY_PAY_ETH_ADDRESS,
-          amount: toPay,
-        });
-        console.log(signedTx)
+        try {
+          const signedTx = await s.signTransaction({
+            to: process.env.REACT_APP_DLAY_PAY_ETH_ADDRESS,
+            amount: toPay,
+          });
+          //TODO fix "signing transactions is unsupported" error then send the tx to the server
+        } catch (error) {
+          if(error.message?.includes('signing transactions is unsupported')) {
+            setErrorMessage('Unfortunately, I could not fully implement the button because "signers.signTransaction()" returns "Error: signing transactions is unsupported (operation="signTransaction", code=UNSUPPORTED_OPERATION, version=providers/5.7.2)"');
+          }
+        }
       } else {
-        console.log("NOT OK : " + balance)
         setErrorMessage('Not enough fund')
       }
     } else {
