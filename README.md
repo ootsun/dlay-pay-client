@@ -1,70 +1,74 @@
-# Getting Started with Create React App
+# DLay Pay server
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Summary
+DLay Pay is a service that allows online stores (= consumers) to offer **anonymous payments**.
+It asks the customer to sign a purchase transaction with `to` field defined as the address of DLay Pay and does not immediately submit it to zkSync's network.
+Besides, the `to` field is set to DLay Pay's address.
 
-## Available Scripts
+It stores the signed transaction and signs and then submits a similar transaction but this time with the consumer's address as `to` field.
 
-In the project directory, you can run:
+This way, **sensitive information** (name, email, delivery address, etc.) **aren't linked to the customer main address**.
 
-### `npm start`
+[Laydger.store](https://laydger.store) is a consumer built for demonstration purposes.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Other repositories created during the hackathon
+- [dlay-pay-client](https://github.com/ootsun/dlay-pay-client)
+- [laydger-client](https://github.com/ootsun/laydger-client)
+- [laydger-server](https://github.com/ootsun/laydger-server)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Description
+To obfuscate the consumer transaction, DLay Pay submits it to zkSync after an indeterministic period.
+The whole process can be described in 10 steps :
+![diagram](documentation/diagram.png)
 
-### `npm test`
+1. The customer initiates a payment on the consumer's website
+2. Its server contacts the DLay Pay server with this information : paymentId, merchantId, amountInWei, callbackUrl and addressToCredit. The response contains a redirection link pointing to the DLay Pay website.
+3. The consumer redirects the customer
+4. He connects his wallet and signs a transaction. The recipient of the transaction is the address of DLay Pay.
+The signed transaction is not submitted to zkSync. Instead, it is sent to the DLay Pay server
+5. The server signs and submits a similar transaction whose recipient is the consumer's address
+6. The consumer's account is credited
+7. The server notifies the consumer's server of the event with the transaction hash. The consumer's server checks that the transaction is valid and then responds with a redirection url pointing to its own website.
+8. The customer is redirected and the payment is successful!
+9. Later, the DLay Pay server submits the signed customer transaction to zkSync
+10. DLay Pay's account is credited
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+#### Benefits :
+- In case of malicious actions or hacks, neither the consumer nor DLay Pay are able to link the customer's sensitive information (name, email, delivery address...) to his main wallet address
+- The consumer can delegate the most dangerous part of the payment process (the management of the private key) to an external service and store its private key in a cold wallet
+- DLay Pay supports the volatility of the zKSync fee market
 
-### `npm run build`
+#### Disadvantages :
+- DLay Pay charges a fee
+- The consumer misses the opportunity to analyze its customer's wallet. Privacy is preserved.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+#### Areas for improvement
+- The customer could spend all his funds before DLay Pay submits the signed transaction. To prevent this, a wallet plugin could be built.
+The plugin would act as a 2 of 2 multisig between the customer and DLay Pay. By default, DLay Pay approves all transaction.
+But if DLay Pay detects that the customer is moving funds that are needed for his purchase, the transaction wouldn't be approved.
+If DLay Pay goes rogue and censors the customer, a 1-hour countdown may begin. Once the time limit has passed, the plugin would be uninstalled.
+But this way, DLay Pay can always detect an uninstallation and submit a possible transaction.
+- DLay Pay could use a Pay Master to allow the customer to pay with the token of his choice
+- Using the Sismo Protocol, the customer could mint a ZK badge on his public wallet address attesting that he is the one who made the payment. A use case for this badge would be to allow customers to shop without email/password authentication.
+- DLay Pay could send the money to the consumer minus a random difference (between 0.1 and 1%) to further obfuscate the transaction
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+#### Not implemented yet
+Steps 4, 9 and 10 are currently not executed because some components are missing : 
+- The wallet plugin
+- Asking the customer to sign a transaction (signer.signTransaction() returns "Error: signing transactions is unsupported")
+Many security checks still need to be put in place too.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Screenshots
+#### Steps 1, 2 and 3
+![steps 1-3](documentation/steps1-3.png)
+![steps 1-3 bis](documentation/steps1-3bis.png)
+#### Steps 4, 5, 6, 7 and 8
+![steps 4-8](documentation/steps4-8.png)
+#### Successful payment
+![successful payment](documentation/successful-payment.png)
 
-### `npm run eject`
+### Hosted at
+[dlay-pay.xyz](https://dlay-pay.xyz)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Author
+This project was developed by [OoTsun](https://twitter.com/Oo_Tsun).
